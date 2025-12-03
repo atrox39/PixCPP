@@ -1,0 +1,32 @@
+# CMake generated files
+build/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+
+# IDE specific files (e.g., CLion)
+.idea/
+cmake-build-*
+
+# Operating system specific files
+.DS_Store
+Thumbs.db
+
+# Other common build outputs
+*.o
+*.obj
+*.lo
+*.la
+*.so
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+*.log
