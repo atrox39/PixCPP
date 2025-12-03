@@ -90,10 +90,6 @@ The project uses CMake for build configuration and automatically fetches Dear Im
 - ImGui Branch: docking (for advanced windowing features)
 - Backends: SDL2 + OpenGL3
 
-## License
-
-[Add your license information here]
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
