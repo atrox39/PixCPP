@@ -1,6 +1,8 @@
 #include "App.hpp"
 #include "core/MenuBar.hpp"
 #include "core/Windows.hpp"
+#include "ui/Canvas.hpp"
+#include "ui/CanvasWindow.hpp"
 
 #include<imgui.h>
 #include<backends/imgui_impl_sdl2.h>
@@ -98,6 +100,9 @@ void App::run() {
       ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
       ImGui::End();
     }
+
+    Canvas canvas(32, 32);
+    DrawCanvasWindow(canvas);
 
     DrawMenuBar();
     DrawWindows();
