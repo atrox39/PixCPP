@@ -1,6 +1,7 @@
 #pragma once
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_opengl.h>
+#include<ui/Canvas.hpp>
 
 class App {
 public:
@@ -14,6 +15,9 @@ private:
   SDL_GLContext gl_context = nullptr;
   bool running = true;
 
+  Canvas canvas{16, 16};
+
+  void AllocateConsole();
   void processEvent();
   void render();
 };

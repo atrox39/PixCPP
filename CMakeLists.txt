@@ -6,25 +6,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# --------------------------------------------------------------------
-# Opcional: exportar compile_commands.json para VSCode
-# --------------------------------------------------------------------
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# --------------------------------------------------------------------
-# SDL2
-# --------------------------------------------------------------------
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-# --------------------------------------------------------------------
-# OpenGL
-# --------------------------------------------------------------------
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL2IMAGE REQUIRED SDL2_image)
+include_directories(${SDL2IMAGE_INCLUDE_DIRS})
+
 find_package(OpenGL REQUIRED)
 
-# --------------------------------------------------------------------
-# Dear ImGui
-# --------------------------------------------------------------------
 include(FetchContent)
 message(STATUS "Downloading ImGUI...")
 
@@ -50,23 +42,30 @@ target_include_directories(imgui PUBLIC
   ${imgui_SOURCE_DIR}
   ${imgui_SOURCE_DIR}/backends
   ${SDL2_INCLUDE_DIRS}
+  ${SDL2_IMAGE_INCLUDE_DIRS}
 )
 
 target_link_libraries(imgui PUBLIC
   OpenGL::GL
   ${SDL2_LIBRARIES}
+  ${SDL2_IMAGE_LIBRARIES}
 )
 
-# --------------------------------------------------------------------
-# Archivos del proyecto PixC++
-# --------------------------------------------------------------------
 file(GLOB PIXCPP_SOURCES
     src/*.cpp
     src/ui/*.cpp
     src/core/*.cpp
 )
 
-add_executable(PixC++ ${PIXCPP_SOURCES})
+file(COPY assets/PixC++.png DESTINATION ${CMAKE_BINARY_DIR}/assets)
+file(COPY assets/PixC++.bmp DESTINATION ${CMAKE_BINARY_DIR}/assets)
+file(COPY assets/PixC++.ico DESTINATION ${CMAKE_BINARY_DIR}/assets)
+
+if (WIN32)
+  add_executable(PixC++ ${PIXCPP_SOURCES} src/resources.rc)
+else()
+  add_executable(PixC++ ${PIXCPP_SOURCES})
+endif()
 
 target_include_directories(PixC++ PRIVATE
     src
@@ -77,14 +76,10 @@ target_include_directories(PixC++ PRIVATE
 target_link_libraries(PixC++ PRIVATE
     imgui
     ${SDL2_LIBRARIES}
+    ${SDL2IMAGE_LIBRARIES}
     OpenGL::GL
 )
 
-# --------------------------------------------------------------------
-# Platform-specific libraries
-# --------------------------------------------------------------------
-
-# Windows (MinGW/MSVC)
 if(WIN32)
   target_link_libraries(PixC++ PRIVATE
     mingw32
@@ -94,7 +89,6 @@ if(WIN32)
   set_target_properties(PixC++ PROPERTIES WIN32_EXECUTABLE TRUE)
 endif()
 
-# macOS
 if(APPLE)
   target_link_libraries(PixC++ PRIVATE
     "-framework Cocoa"
@@ -104,7 +98,6 @@ if(APPLE)
   )
 endif()
 
-# Linux
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   target_link_libraries(PixC++ PRIVATE

@@ -1,7 +1,6 @@
 #include "App.hpp"
 #include "core/MenuBar.hpp"
 #include "core/Windows.hpp"
-#include "ui/Canvas.hpp"
 #include "ui/CanvasWindow.hpp"
 
 #include<imgui.h>
@@ -10,6 +9,7 @@
 
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_opengl.h>
+#include<SDL2/SDL_image.h>
 
 #include<stdio.h>
 
@@ -31,11 +31,36 @@ App::~App() {
   SDL_Quit();
 }
 
+void App::AllocateConsole() {
+  #ifdef _WIN32
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+    freopen("CONOUT$", "w", stderr);
+  #endif
+}
+
 bool App::init() {
+  #ifdef DEBUG
+    AllocateConsole();
+  #endif
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
     printf("Error: %s\n", SDL_GetError());
     return false;
   }
+  
+  if (window) {
+    #ifndef _WIN32
+      SDL_Surface* icon = nullptr;
+      icon = IMG_Load("assets/PixC++.png");
+      if (icon) {
+        SDL_SetWindowIcon(window, icon);
+        SDL_FreeSurface(icon);
+      } else {
+        printf("Failed to load icon image: %s\n", SDL_GetError());
+      }
+    #endif
+  }
+
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -101,7 +126,6 @@ void App::run() {
       ImGui::End();
     }
 
-    Canvas canvas(32, 32);
     DrawCanvasWindow(canvas);
 
     DrawMenuBar();
