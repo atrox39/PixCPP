@@ -37,9 +37,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup SDL
-      uses: libsdl-org/setup-sdl@v1
+      uses: libsdl-org/setup-sdl@main
       with:
         version: 2-latest
+        version-sdl-image: 2-latest
         install-linux-dependencies: true
     - name: Set reusable strings
       id: strings
