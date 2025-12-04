@@ -55,6 +55,7 @@ file(GLOB PIXCPP_SOURCES
     src/*.cpp
     src/ui/*.cpp
     src/core/*.cpp
+    src/tools/*.cpp
 )
 
 file(COPY assets/PixC++.png DESTINATION ${CMAKE_BINARY_DIR}/assets)
