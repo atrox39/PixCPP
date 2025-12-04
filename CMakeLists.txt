@@ -58,9 +58,7 @@ file(GLOB PIXCPP_SOURCES
     src/tools/*.cpp
 )
 
-file(COPY assets/PixC++.png DESTINATION ${CMAKE_BINARY_DIR}/assets)
-file(COPY assets/PixC++.bmp DESTINATION ${CMAKE_BINARY_DIR}/assets)
-file(COPY assets/PixC++.ico DESTINATION ${CMAKE_BINARY_DIR}/assets)
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
 if (WIN32)
   add_executable(PixC++ ${PIXCPP_SOURCES} src/resources.rc)

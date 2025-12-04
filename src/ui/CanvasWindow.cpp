@@ -4,11 +4,16 @@
 #include<algorithm>
 
 static CanvasRenderState renderState;
-static ToolState toolState;
 
-void DrawCanvasWindow(Canvas &canvas) {
+void DrawCanvasWindow(Canvas &canvas, ToolState &toolState) {
   ImGui::Begin("Canvas");
-  ImGui::ColorEdit4("Color", (float*)&toolState.currentColor);
+
+  ImGuiIO& io = ImGui::GetIO();
+  if (!io.WantCaptureKeyboard) {
+    if (ImGui::IsKeyPressed(ImGuiKey_B)) toolState.currentTool = Tool::Brush;
+    if (ImGui::IsKeyPressed(ImGuiKey_E)) toolState.currentTool = Tool::Eraser;
+    if (ImGui::IsKeyPressed(ImGuiKey_I)) toolState.currentTool = Tool::Eyedropper;
+  }
 
   if (ImGui::IsWindowHovered()) {
     float wheel = ImGui::GetIO().MouseWheel;

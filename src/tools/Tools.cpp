@@ -42,7 +42,9 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
   uint8_t a = (uint8_t)(toolState.currentColor.w * 255.0f);
   uint32_t color = (a<<24) | (b<<16) | (g<<8) | r;
 
-  if (leftDown && toolState.currentTool == Tool::Brush) {
+  uint32_t eraseColor = 0x00000000; // Transparent
+
+  if (leftDown && (toolState.currentTool == Tool::Brush)) {
     if (!toolState.painting) {
       toolState.painting = true;
       toolState.lastX = px;
@@ -56,8 +58,33 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
     return;
   }
 
+  if (leftDown && toolState.currentTool == Tool::Eraser) {
+    if (!toolState.painting) {
+      toolState.painting = true;
+      toolState.lastX = px;
+      toolState.lastY = py;
+      DrawLine(canvas, px, py, px, py, eraseColor);
+      return;
+    }
+    DrawLine(canvas, toolState.lastX, toolState.lastY, px, py, eraseColor);
+    toolState.lastX = px;
+    toolState.lastY = py;
+    return;
+  }
+
+  if (leftDown && toolState.currentTool == Tool::Eyedropper) {
+    uint32_t col = canvas.getPixels()[py * canvas.getWidth() + px];
+    uint8_t r = col & 0xFF;
+    uint8_t g = (col >> 8) & 0xFF;
+    uint8_t b = (col >> 16) & 0xFF;
+    uint8_t a = (col >> 24) & 0xFF;
+    toolState.currentColor = ImVec4(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
+    toolState.currentTool = Tool::Brush; // Switch back to brush after picking color
+    return;
+  }
+
   if (!leftDown) {
     toolState.painting = false;
     toolState.lastX = toolState.lastY = -1;
-  }
+  }  
 }

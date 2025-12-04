@@ -1,9 +1,15 @@
 #pragma once
 #include "ui/Canvas.hpp"
 #include<imgui.h>
+#include<SDL2/SDL_opengl.h>
+
+extern GLuint textBrush;
+extern GLuint textEraser;
+extern GLuint textEyedropper;
 
 enum class Tool {
   Brush,
+  Eraser,
   Eyedropper,
   Line
 };

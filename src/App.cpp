@@ -13,6 +13,26 @@
 
 #include<stdio.h>
 
+GLuint textBrush = 0;
+GLuint textEraser = 0;
+GLuint textEyedropper = 0;
+
+GLuint LoadTexture(const char* path) {
+  SDL_Surface* surface = IMG_Load(path);
+  SDL_Surface* conv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ABGR8888, 0);
+  SDL_FreeSurface(surface);
+  surface = conv;
+  if (!surface) return 0;
+  GLuint tex;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  SDL_FreeSurface(surface);
+  return tex;
+}
+
 App::App() {}
 
 App::~App() {
@@ -96,6 +116,11 @@ bool App::init() {
   ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
   ImGui_ImplOpenGL3_Init("#version 330");
 
+  // Load tool icons
+  textBrush = LoadTexture("assets/icons/brush.png");
+  textEraser = LoadTexture("assets/icons/eraser.png");
+  textEyedropper = LoadTexture("assets/icons/eyedropper.png");
+
   return true;
 }
 
@@ -126,10 +151,10 @@ void App::run() {
       ImGui::End();
     }
 
-    DrawCanvasWindow(canvas);
+    DrawCanvasWindow(canvas, toolState);
 
     DrawMenuBar();
-    DrawWindows();
+    DrawToolsWindow(toolState);
 
     render();
   }
