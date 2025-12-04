@@ -27,13 +27,17 @@ static void DrawLine(Canvas &canvas, int x0, int y0, int x1, int y1, uint32_t co
 }
 
 void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDown, bool rightDown) {
+  int w = canvas.getWidth();
+  int h = canvas.getHeight();
+  if (px < 0 || px >= w || py < 0 || py >= h) return;
+
   if (rightDown && (toolState.currentTool == Tool::Eyedropper || toolState.currentTool == Tool::Brush)) {
     uint32_t col = canvas.getPixels()[py * canvas.getWidth() + px];
     uint8_t r = col & 0xFF;
     uint8_t g = (col >> 8) & 0xFF;
     uint8_t b = (col >> 16) & 0xFF;
     uint8_t a = (col >> 24) & 0xFF;
-    if (a == 0) return;
+    if (a == 0) a = 255;
     toolState.currentColor = ImVec4(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
     return;
   }
@@ -79,10 +83,30 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
     uint8_t g = (col >> 8) & 0xFF;
     uint8_t b = (col >> 16) & 0xFF;
     uint8_t a = (col >> 24) & 0xFF;
-    if (a == 0) return;
+    if (a == 0) a = 255;
     toolState.currentColor = ImVec4(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
     if (leftDown)
       toolState.currentTool = Tool::Brush;
+    return;
+  }
+
+  bool mouseClicked = leftDown && !toolState.lastLeftDown;
+  bool mouseReleased = !leftDown && toolState.lastLeftDown;
+  toolState.lastLeftDown = leftDown;
+  if (toolState.currentTool == Tool::Line && mouseClicked) {
+    if (!toolState.lineMode) {
+      toolState.lineMode = true;
+      toolState.lineStartX = px;
+      toolState.lineStartY = py;
+      return;
+    }
+    uint8_t r = (uint8_t)(toolState.currentColor.x * 255.0f);
+    uint8_t g = (uint8_t)(toolState.currentColor.y * 255.0f);
+    uint8_t b = (uint8_t)(toolState.currentColor.z * 255.0f);
+    uint8_t a = (uint8_t)(toolState.currentColor.w * 255.0f);
+    uint32_t color = (a<<24) | (b<<16) | (g<<8) | r;
+    DrawLine(canvas, toolState.lineStartX, toolState.lineStartY, px, py, color);
+    toolState.lineMode = false;
     return;
   }
 

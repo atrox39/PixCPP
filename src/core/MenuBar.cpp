@@ -1,5 +1,21 @@
 #include "MenuBar.hpp"
-#include<imgui.h>
+
+static bool showAboutModal = false;
+
+void ShowAboutModal() {
+  if (ImGui::BeginPopupModal("About", &showAboutModal, ImGuiWindowFlags_AlwaysAutoResize)) {
+    ImGui::Text("PixCPP\nA simple pixel art editor.\n\n");
+    ImGui::Separator();
+    ImGui::Text("Version: 1.0.0\n");
+    ImGui::Text("Author: Atrox39\n");
+    ImGui::Text("GitHub: https://github.com/atrox39/PixCPP\n");
+    if (ImGui::Button("OK")) {
+      ImGui::CloseCurrentPopup();
+    }
+    ImGui::SetItemDefaultFocus();
+    ImGui::EndPopup();
+  }
+}
 
 void DrawMenuBar() {
   if (ImGui::BeginMainMenuBar()) {
@@ -22,9 +38,15 @@ void DrawMenuBar() {
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Help")) {
-      ImGui::MenuItem("About", nullptr, false, false);
+      if (ImGui::MenuItem("About")) {
+        showAboutModal = true;
+        ImGui::OpenPopup("About");
+      }
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
+    if (showAboutModal) {
+      ShowAboutModal();
+    }
   }
 }

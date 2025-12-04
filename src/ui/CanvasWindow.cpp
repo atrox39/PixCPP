@@ -36,12 +36,36 @@ void DrawCanvasWindow(Canvas &canvas, ToolState &toolState) {
 
   ImVec2 mouse = ImGui::GetIO().MousePos;
 
+  int px = -1, py = -1;
   bool inside = mouse.x >= origin.x && mouse.x <= origin.x + canvasSize.x &&
     mouse.y >= origin.y && mouse.y <= origin.y + canvasSize.y;
   if (inside) {
-    int px = (int)((mouse.x - origin.x) / renderState.zoom);
-    int py = (int)((mouse.y - origin.y) / renderState.zoom);
+    px = (int)((mouse.x - origin.x) / renderState.zoom);
+    py = (int)((mouse.y - origin.y) / renderState.zoom);
     ApplyTool(canvas, toolState, px, py, ImGui::IsMouseDown(ImGuiMouseButton_Left), ImGui::IsMouseDown(ImGuiMouseButton_Right));
   }
+
+  if (toolState.currentTool == Tool::Line && toolState.lineMode && px >= 0 && py >= 0) {
+    ImDrawList *drawList = ImGui::GetWindowDrawList();
+
+    ImVec2 p0(
+      origin.x + toolState.lineStartX * renderState.zoom + renderState.zoom * 0.5f,
+      origin.y + toolState.lineStartY * renderState.zoom + renderState.zoom * 0.5f
+    );
+
+    ImVec2 p1(
+      origin.x + px * renderState.zoom + renderState.zoom * 0.5f,
+      origin.y + py * renderState.zoom + renderState.zoom * 0.5f
+    );
+    
+    ImU32 col = IM_COL32(
+      (int)(toolState.currentColor.x * 255.0f),
+      (int)(toolState.currentColor.y * 255.0f),
+      (int)(toolState.currentColor.z * 255.0f),
+      255
+    );
+    drawList->AddLine(p0, p1, col, 2.0f); // 2px thickness is enough
+  }
+
   ImGui::End();
 }

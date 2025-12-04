@@ -45,13 +45,15 @@ void DrawToolsWindow(ToolState &toolState) {
 
   IconButton(textBrush, Tool::Brush, "Brush Tool", true);
   IconButton(textEraser, Tool::Eraser, "Eraser Tool", false);
-  IconButton(textEyedropper, Tool::Eyedropper, "Eyedropper Tool");
-  if (toolState.currentTool == Tool::Brush || toolState.currentTool == Tool::Eyedropper) {
+  IconButton(textEyedropper, Tool::Eyedropper, "Eyedropper Tool", true);
+  IconButton(textLine, Tool::Line, "Line Tool", false);
+  if (toolState.currentTool == Tool::Brush || toolState.currentTool == Tool::Eyedropper || toolState.currentTool == Tool::Line) {
+    ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB;
     ImGui::Separator();
     ImGui::Text("Color");
-    ImGui::ColorEdit4("##colorpicker", (float*)&toolState.currentColor);
+    ImGui::ColorEdit4("##colorpicker", (float*)&toolState.currentColor, flags);
   }
-  if (toolState.currentTool == Tool::Brush) {
+  if (toolState.currentTool == Tool::Brush || toolState.currentTool == Tool::Eraser || toolState.currentTool == Tool::Line) {
     ImGui::Separator();
     ImGui::Text("Brush Settings");
     static float brushSize = 1.0f;

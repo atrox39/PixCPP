@@ -17,6 +17,7 @@
 GLuint textBrush = 0;
 GLuint textEraser = 0;
 GLuint textEyedropper = 0;
+GLuint textLine = 0;
 
 App::App() {}
 
@@ -106,6 +107,7 @@ bool App::init() {
   textBrush = TextureManager::Load("assets/icons/brush.png");
   textEraser = TextureManager::Load("assets/icons/eraser.png");
   textEyedropper = TextureManager::Load("assets/icons/eyedropper.png");
+  textLine = TextureManager::Load("assets/icons/line.png");
 
   return true;
 }
