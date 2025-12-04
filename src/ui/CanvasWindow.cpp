@@ -5,6 +5,35 @@
 
 static CanvasRenderState renderState;
 
+static void PreviewLine(
+  ImDrawList* draw,
+  int x0, int y0,
+  int x1, int y1,
+  float zoom, ImVec2 origin,
+  ImU32 col
+) {
+  int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+  int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+  int err = dx + dy;
+  while (true) {
+    ImVec2 p0(
+      origin.x + x0 * zoom,
+      origin.y + y0 * zoom
+    );
+    ImVec2 p1(
+      p0.x + zoom,
+      p0.y + zoom
+    );
+  
+    draw->AddRectFilled(p0, p1, col);
+    if (x0 == x1 && y0 == y1) break;
+
+    int e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x0 += sx; }
+    if (e2 <= dx) { err += dx; y0 += sy; }
+  }
+}
+
 void DrawCanvasWindow(Canvas &canvas, ToolState &toolState) {
   ImGui::Begin("Canvas");
 
@@ -46,25 +75,16 @@ void DrawCanvasWindow(Canvas &canvas, ToolState &toolState) {
   }
 
   if (toolState.currentTool == Tool::Line && toolState.lineMode && px >= 0 && py >= 0) {
-    ImDrawList *drawList = ImGui::GetWindowDrawList();
-
-    ImVec2 p0(
-      origin.x + toolState.lineStartX * renderState.zoom + renderState.zoom * 0.5f,
-      origin.y + toolState.lineStartY * renderState.zoom + renderState.zoom * 0.5f
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImU32 col = ImGui::ColorConvertFloat4ToU32(toolState.currentColor);
+    PreviewLine(
+      drawList,
+      toolState.lineStartX, toolState.lineStartY,
+      px, py,
+      renderState.zoom,
+      origin,
+      col
     );
-
-    ImVec2 p1(
-      origin.x + px * renderState.zoom + renderState.zoom * 0.5f,
-      origin.y + py * renderState.zoom + renderState.zoom * 0.5f
-    );
-    
-    ImU32 col = IM_COL32(
-      (int)(toolState.currentColor.x * 255.0f),
-      (int)(toolState.currentColor.y * 255.0f),
-      (int)(toolState.currentColor.z * 255.0f),
-      255
-    );
-    drawList->AddLine(p0, p1, col, 2.0f); // 2px thickness is enough
   }
 
   ImGui::End();
