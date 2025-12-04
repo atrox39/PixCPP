@@ -113,5 +113,12 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
   if (!leftDown) {
     toolState.painting = false;
     toolState.lastX = toolState.lastY = -1;
-  }  
+  }
+
+  if (ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+    toolState.lineMode = false;
+    toolState.lineStartX = -1;
+    toolState.lineStartY = -1;
+    return;
+  }
 }

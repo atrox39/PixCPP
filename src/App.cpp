@@ -131,7 +131,7 @@ void App::run() {
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
       ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-      ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+      ImGui::Begin("PixC++", nullptr, window_flags);
       ImGui::PopStyleVar(3);
 
       ImGuiID dockspace_id = ImGui::GetID("PixC++DockSpace");
@@ -141,7 +141,7 @@ void App::run() {
 
     DrawCanvasWindow(canvas, toolState);
 
-    DrawMenuBar();
+    DrawMenuBar(canvas);
     DrawToolsWindow(toolState);
 
     render();
