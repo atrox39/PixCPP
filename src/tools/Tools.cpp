@@ -72,14 +72,15 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
     return;
   }
 
-  if (leftDown && toolState.currentTool == Tool::Eyedropper) {
+  if (toolState.currentTool == Tool::Eyedropper) {
     uint32_t col = canvas.getPixels()[py * canvas.getWidth() + px];
     uint8_t r = col & 0xFF;
     uint8_t g = (col >> 8) & 0xFF;
     uint8_t b = (col >> 16) & 0xFF;
     uint8_t a = (col >> 24) & 0xFF;
     toolState.currentColor = ImVec4(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
-    toolState.currentTool = Tool::Brush; // Switch back to brush after picking color
+    if (leftDown) // Reset to brush after picking color
+      toolState.currentTool = Tool::Brush;
     return;
   }
 
