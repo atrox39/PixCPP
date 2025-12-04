@@ -66,6 +66,11 @@ else()
   add_executable(PixC++ ${PIXCPP_SOURCES})
 endif()
 
+target_compile_definitions(
+  PixC++ PRIVATE
+  $<$<CONFIG:Debug>:Debug>
+)
+
 target_include_directories(PixC++ PRIVATE
     src
     src/ui

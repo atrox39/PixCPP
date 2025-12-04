@@ -2,6 +2,7 @@
 #include "core/MenuBar.hpp"
 #include "core/Windows.hpp"
 #include "ui/CanvasWindow.hpp"
+#include "tools/TextureManager.hpp"
 
 #include<imgui.h>
 #include<backends/imgui_impl_sdl2.h>
@@ -17,28 +18,13 @@ GLuint textBrush = 0;
 GLuint textEraser = 0;
 GLuint textEyedropper = 0;
 
-GLuint LoadTexture(const char* path) {
-  SDL_Surface* surface = IMG_Load(path);
-  SDL_Surface* conv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ABGR8888, 0);
-  SDL_FreeSurface(surface);
-  surface = conv;
-  if (!surface) return 0;
-  GLuint tex;
-  glGenTextures(1, &tex);
-  glBindTexture(GL_TEXTURE_2D, tex);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  SDL_FreeSurface(surface);
-  return tex;
-}
-
 App::App() {}
 
 App::~App() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
+  TextureManager::DestroyAll();
 
   if (gl_context) {
     SDL_GL_DeleteContext(gl_context);
@@ -60,7 +46,7 @@ void App::AllocateConsole() {
 }
 
 bool App::init() {
-  #ifdef DEBUG
+  #ifdef Debug
     AllocateConsole();
   #endif
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
@@ -117,9 +103,9 @@ bool App::init() {
   ImGui_ImplOpenGL3_Init("#version 330");
 
   // Load tool icons
-  textBrush = LoadTexture("assets/icons/brush.png");
-  textEraser = LoadTexture("assets/icons/eraser.png");
-  textEyedropper = LoadTexture("assets/icons/eyedropper.png");
+  textBrush = TextureManager::Load("assets/icons/brush.png");
+  textEraser = TextureManager::Load("assets/icons/eraser.png");
+  textEyedropper = TextureManager::Load("assets/icons/eyedropper.png");
 
   return true;
 }

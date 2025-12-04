@@ -27,12 +27,13 @@ static void DrawLine(Canvas &canvas, int x0, int y0, int x1, int y1, uint32_t co
 }
 
 void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDown, bool rightDown) {
-  if (rightDown) {
+  if (rightDown && (toolState.currentTool == Tool::Eyedropper || toolState.currentTool == Tool::Brush)) {
     uint32_t col = canvas.getPixels()[py * canvas.getWidth() + px];
     uint8_t r = col & 0xFF;
     uint8_t g = (col >> 8) & 0xFF;
     uint8_t b = (col >> 16) & 0xFF;
     uint8_t a = (col >> 24) & 0xFF;
+    if (a == 0) return;
     toolState.currentColor = ImVec4(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
     return;
   }
@@ -78,8 +79,9 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
     uint8_t g = (col >> 8) & 0xFF;
     uint8_t b = (col >> 16) & 0xFF;
     uint8_t a = (col >> 24) & 0xFF;
+    if (a == 0) return;
     toolState.currentColor = ImVec4(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
-    if (leftDown) // Reset to brush after picking color
+    if (leftDown)
       toolState.currentTool = Tool::Brush;
     return;
   }
