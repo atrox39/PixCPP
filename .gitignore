@@ -31,3 +31,4 @@ Thumbs.db
 *.out
 *.log
 .vscode/
+imgui.ini
