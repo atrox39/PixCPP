@@ -1,6 +1,7 @@
 #include "CanvasWindow.hpp"
 #include "CanvasRender.hpp"
-#include "tools/Tools.hpp"
+#include<tools/Tools.hpp>
+#include<tools/FileIO.hpp>
 #include<algorithm>
 
 static CanvasRenderState renderState;
@@ -35,8 +36,7 @@ static void PreviewLine(
 }
 
 void DrawCanvasWindow(Canvas &canvas, ToolState &toolState) {
-  ImGui::Begin("Canvas");
-
+  ImGui::Begin(gFile.dirty ? "Canvas*" : "Canvas");
   ImGuiIO& io = ImGui::GetIO();
   if (!io.WantCaptureKeyboard) {
     if (ImGui::IsKeyPressed(ImGuiKey_B)) toolState.currentTool = Tool::Brush;

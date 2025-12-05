@@ -1,7 +1,11 @@
 #include "Tools.hpp"
+#include "FileIO.hpp"
 #include<cmath>
 
 static void DrawLine(Canvas &canvas, int x0, int y0, int x1, int y1, uint32_t color) {
+  if (gFile.dirty == false) {
+    gFile.dirty = true;
+  }
   auto &pix = canvas.setPixels();
   int w = canvas.getWidth();
   int h = canvas.getHeight();
@@ -74,6 +78,9 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
     DrawLine(canvas, toolState.lastX, toolState.lastY, px, py, eraseColor);
     toolState.lastX = px;
     toolState.lastY = py;
+    if (gFile.dirty == false) {
+      gFile.dirty = true;
+    }
     return;
   }
 
@@ -107,6 +114,9 @@ void ApplyTool(Canvas &canvas, ToolState &toolState, int px, int py, bool leftDo
     uint32_t color = (a<<24) | (b<<16) | (g<<8) | r;
     DrawLine(canvas, toolState.lineStartX, toolState.lineStartY, px, py, color);
     toolState.lineMode = false;
+    if (gFile.dirty == false) {
+      gFile.dirty = true;
+    }
     return;
   }
 

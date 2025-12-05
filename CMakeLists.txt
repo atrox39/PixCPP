@@ -38,6 +38,23 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
+FetchContent_Declare(
+  nfd
+  GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+  GIT_TAG v1.2.1
+)
+
+FetchContent_MakeAvailable(nfd)
+
+add_library(nfd_extended STATIC
+  ${nfd_SOURCE_DIR}/src/nfd_win.cpp
+)
+
+target_include_directories(nfd_extended PUBLIC
+  ${nfd_SOURCE_DIR}/src/include
+)
+
+
 target_include_directories(imgui PUBLIC
   ${imgui_SOURCE_DIR}
   ${imgui_SOURCE_DIR}/backends
@@ -72,14 +89,23 @@ target_compile_definitions(
   $<$<CONFIG:Debug>:Debug>
 )
 
+target_compile_definitions(
+  PixC++ PRIVATE
+  $<$<CONFIG:Release>:Release>
+)
+
 target_include_directories(PixC++ PRIVATE
-    src
-    src/ui
-    src/core
+  src
+  src/ui
+  src/core
+  src/tools
+  src/utils
+  src/stb
 )
 
 target_link_libraries(PixC++ PRIVATE
     imgui
+    nfd_extended
     ${SDL2_LIBRARIES}
     ${SDL2IMAGE_LIBRARIES}
     OpenGL::GL
