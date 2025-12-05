@@ -1,10 +1,50 @@
 #include "MenuBar.hpp"
+#include<algorithm>
 #include<nfd.h>
 #include<ui/Canvas.hpp>
 #include<tools/FileIO.hpp>
 #include<utils/ImageIO.hpp>
 
 FileData gFile;
+
+static bool newCanvasOpen = false;
+static int newWidth  = 32;
+static int newHeight = 32;
+
+void DrawNewCanvasModal(Canvas &canvas) {
+  if (ImGui::BeginPopupModal("NewCanvasPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+  {
+    ImGui::Text("Create New Canvas");
+    ImGui::Separator();
+
+    ImGui::InputInt("Width", &newWidth);
+    ImGui::InputInt("Height", &newHeight);
+
+    newWidth = std::clamp(newWidth, 1, 128);
+    newHeight = std::clamp(newHeight, 1, 128);
+
+    ImGui::Separator();
+
+    if (ImGui::Button("Create", ImVec2(120, 0)))
+    {
+      canvas.resize(newWidth, newHeight);
+
+      auto &pix = canvas.setPixels();
+      std::fill(pix.begin(), pix.end(), 0x00000000);
+
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel", ImVec2(120, 0)))
+    {
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::EndPopup();
+  }
+}
 
 void DrawAboutModal() {
   if (ImGui::BeginPopupModal("AboutPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -43,10 +83,7 @@ void DrawMenuBar(Canvas &canvas) {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("New")) {
-        canvas.resize(16, 16);
-        canvas.clear();
-        gFile.path = "";
-        gFile.dirty = false;
+        ImGui::OpenPopup("NewCanvasPopup");
       }
       if (ImGui::MenuItem("Open...")) {
         NFD_Init();
@@ -74,9 +111,12 @@ void DrawMenuBar(Canvas &canvas) {
         SaveCanvasWithDialog(canvas);
       }
       ImGui::Separator();
-      if (ImGui::MenuItem("Exit")) {}
+      if (ImGui::MenuItem("Exit")) {
+        exit(0);
+      }
       ImGui::EndMenu();
     }
+    /* Temporarily disabled edit menu
     if (ImGui::BeginMenu("Edit")) {
       if (ImGui::MenuItem("Undo")) {}
       if (ImGui::MenuItem("Redo")) {}
@@ -86,6 +126,7 @@ void DrawMenuBar(Canvas &canvas) {
       if (ImGui::MenuItem("Paste")) {}
       ImGui::EndMenu();
     }
+    */
     if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("About")) {
         ImGui::OpenPopup("AboutPopup");
@@ -93,6 +134,7 @@ void DrawMenuBar(Canvas &canvas) {
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
-    DrawAboutModal();
   }
+  DrawAboutModal();
+  DrawNewCanvasModal(canvas);
 }
