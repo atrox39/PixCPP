@@ -7,11 +7,16 @@
 
 FileData gFile;
 
-static bool newCanvasOpen = false;
+static bool gShowNewCanvasPopup = false;
+static bool gShowAboutPopup = false;
+
 static int newWidth  = 32;
 static int newHeight = 32;
 
 void DrawNewCanvasModal(Canvas &canvas) {
+  if (gShowNewCanvasPopup) {
+    ImGui::OpenPopup("NewCanvasPopup");
+  }
   if (ImGui::BeginPopupModal("NewCanvasPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
   {
     ImGui::Text("Create New Canvas");
@@ -31,7 +36,7 @@ void DrawNewCanvasModal(Canvas &canvas) {
 
       auto &pix = canvas.setPixels();
       std::fill(pix.begin(), pix.end(), 0x00000000);
-
+      gShowNewCanvasPopup = false;
       ImGui::CloseCurrentPopup();
     }
 
@@ -39,6 +44,7 @@ void DrawNewCanvasModal(Canvas &canvas) {
 
     if (ImGui::Button("Cancel", ImVec2(120, 0)))
     {
+      gShowNewCanvasPopup = false;
       ImGui::CloseCurrentPopup();
     }
 
@@ -47,6 +53,9 @@ void DrawNewCanvasModal(Canvas &canvas) {
 }
 
 void DrawAboutModal() {
+  if (gShowAboutPopup) {
+    ImGui::OpenPopup("AboutPopup");
+  }
   if (ImGui::BeginPopupModal("AboutPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::Text("PixCPP\nA simple pixel art editor.\n\n");
     ImGui::Separator();
@@ -54,6 +63,7 @@ void DrawAboutModal() {
     ImGui::Text("Author: Atrox39\n");
     ImGui::Text("GitHub: https://github.com/atrox39/PixCPP\n");
     if (ImGui::Button("OK")) {
+      gShowAboutPopup = false;
       ImGui::CloseCurrentPopup();
     }
     ImGui::SetItemDefaultFocus();
@@ -83,7 +93,7 @@ void DrawMenuBar(Canvas &canvas) {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("New")) {
-        ImGui::OpenPopup("NewCanvasPopup");
+        gShowNewCanvasPopup = true;
       }
       if (ImGui::MenuItem("Open...")) {
         NFD_Init();
@@ -129,12 +139,13 @@ void DrawMenuBar(Canvas &canvas) {
     */
     if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("About")) {
-        ImGui::OpenPopup("AboutPopup");
+        gShowAboutPopup = true;
       }
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
   }
+
   DrawAboutModal();
   DrawNewCanvasModal(canvas);
 }

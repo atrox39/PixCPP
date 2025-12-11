@@ -120,16 +120,20 @@ void App::run() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    DrawMenuBar(canvas);
+
     {
       ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
       const ImGuiViewport *viewport = ImGui::GetMainViewport();
       ImGui::SetNextWindowPos(viewport->WorkPos);
       ImGui::SetNextWindowSize(viewport->WorkSize);
       ImGui::SetNextWindowViewport(viewport->ID);
+
       window_flags |= ImGuiWindowFlags_NoTitleBar | 
         ImGuiWindowFlags_NoCollapse | 
         ImGuiWindowFlags_NoResize | 
         ImGuiWindowFlags_NoMove;
+
       ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
       ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -139,12 +143,11 @@ void App::run() {
 
       ImGuiID dockspace_id = ImGui::GetID("PixC++DockSpace");
       ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
+      
       ImGui::End();
     }
 
-    DrawCanvasWindow(canvas, toolState);
-
-    DrawMenuBar(canvas);
+    DrawCanvasWindow(canvas, toolState);    
     DrawToolsWindow(toolState);
 
     render();
